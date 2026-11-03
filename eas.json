@@ -42,6 +42,9 @@
       "extends": "base",
       "distribution": "internal",
       "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
       "ios": {
         "resourceClass": "large"
       },

@@ -57,9 +57,9 @@ module.exports = function (_config) {
     expo: {
       version: VERSION,
       name: 'Kindred',
-      slug: 'kindred',
+      slug: 'kindred-',
       scheme: 'bluesky',
-      owner: 'blueskysocial',
+      owner: 'soloffyt',
       runtimeVersion: {
         policy: 'appVersion',
       },
@@ -614,7 +614,7 @@ module.exports = function (_config) {
               },
             },
           },
-          projectId: '55bd077a-d905-4184-9c7f-94789ba0f302',
+          projectId: 'b8983c8c-c964-4ad9-a554-55ede8b26c89',
         },
       },
       experiments: {
