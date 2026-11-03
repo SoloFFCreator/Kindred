@@ -205,7 +205,7 @@ module.exports = function (_config) {
           backgroundColor: '#241529',
         },
         googleServicesFile: './google-services.json',
-        package: 'xyz.blueskyweb.app',
+        package: 'com.kindred.social',
         blockedPermissions: ['android.permission.ACCESS_FINE_LOCATION'],
         intentFilters: [
           {
