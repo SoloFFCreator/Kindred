@@ -43,8 +43,7 @@
       "distribution": "internal",
       "channel": "production",
       "android": {
-        "buildType": "apk",
-        "resourceClass": "large"
+        "buildType": "apk"
       },
       "ios": {
         "resourceClass": "large"
