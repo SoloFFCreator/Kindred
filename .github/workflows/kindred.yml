@@ -1,0 +1,94 @@
+---
+name: Build Kindred Android APK
+
+on:
+  push:
+    branches:
+      - codex/kindred-branding
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kindred-android-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build internal APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validate required secrets
+        shell: bash
+        env:
+          KINDRED_EXPO_TOKEN: ${{ secrets.KINDRED_EXPO_TOKEN }}
+          KINDRED_GOOGLE_SERVICES_JSON: ${{ secrets.KINDRED_GOOGLE_SERVICES_JSON }}
+        run: |
+          set -euo pipefail
+          test -n "$KINDRED_EXPO_TOKEN" || { echo "::error::Add the KINDRED_EXPO_TOKEN repository secret."; exit 1; }
+          test -n "$KINDRED_GOOGLE_SERVICES_JSON" || { echo "::error::Add the KINDRED_GOOGLE_SERVICES_JSON repository secret."; exit 1; }
+
+      - name: Set up Expo project and install dependencies
+        uses: ./.github/actions/setup-expo-project
+        with:
+          expo-token: ${{ secrets.KINDRED_EXPO_TOKEN }}
+          eas-version: '25.3.0'
+
+      - name: Compile translations
+        uses: ./.github/actions/compile-i18n
+
+      - name: Write Firebase Android configuration
+        shell: bash
+        env:
+          KINDRED_GOOGLE_SERVICES_JSON: ${{ secrets.KINDRED_GOOGLE_SERVICES_JSON }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$KINDRED_GOOGLE_SERVICES_JSON" > google-services.json
+          node - <<'NODE'
+          const fs = require('node:fs')
+          const config = JSON.parse(fs.readFileSync('google-services.json', 'utf8'))
+          const hasPackage = config.client?.some(
+            client => client.client_info?.android_client_info?.package_name === 'com.kindred.social',
+          )
+          if (!hasPackage) {
+            throw new Error('Firebase config does not contain the expected Android package com.kindred.social')
+          }
+          console.log('Firebase Android package verified: com.kindred.social')
+          NODE
+
+      - name: Build APK locally with EAS
+        uses: ./.github/actions/eas-local-build
+        env:
+          EXPO_TOKEN: ${{ secrets.KINDRED_EXPO_TOKEN }}
+        with:
+          platform: android
+          profile: preview
+          output: Kindred.apk
+          log-path: kindred-android-build.log
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Kindred-Android-APK-${{ github.run_number }}
+          path: Kindred.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Kindred-Android-Build-Log-${{ github.run_number }}
+          path: kindred-android-build.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Remove Firebase configuration
+        if: always()
+        shell: bash
+        run: rm -f google-services.json
