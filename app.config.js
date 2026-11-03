@@ -56,8 +56,8 @@ module.exports = function (_config) {
   return {
     expo: {
       version: VERSION,
-      name: 'Bluesky',
-      slug: 'bluesky',
+      name: 'Kindred',
+      slug: 'kindred',
       scheme: 'bluesky',
       owner: 'blueskysocial',
       runtimeVersion: {
@@ -198,11 +198,11 @@ module.exports = function (_config) {
         },
       },
       android: {
-        icon: './assets/app-icons/android_icon_default_next.png',
+        icon: './assets/kindred-logo.png',
         adaptiveIcon: {
-          foregroundImage: './assets/icon-android-foreground.png',
+          foregroundImage: './assets/kindred-logo.png',
           monochromeImage: './assets/icon-android-monochrome.png',
-          backgroundColor: '#006AFF',
+          backgroundColor: '#241529',
         },
         googleServicesFile: './google-services.json',
         package: 'xyz.blueskyweb.app',
@@ -491,12 +491,12 @@ module.exports = function (_config) {
              */
             default_light: {
               ios: './assets/app-icons/ios_icon_legacy_light.png',
-              android: './assets/app-icons/android_icon_legacy_light.png',
+              android: './assets/kindred-logo.png',
               prerendered: true,
             },
             default_dark: {
               ios: './assets/app-icons/ios_icon_legacy_dark.png',
-              android: './assets/app-icons/android_icon_legacy_dark.png',
+              android: './assets/kindred-logo.png',
               prerendered: true,
             },
 
